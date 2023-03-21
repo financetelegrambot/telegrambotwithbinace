@@ -45,11 +45,11 @@ const getdataspotbtc = async () => {
         if(item.qty > 15){
           let isbuying = null
           if(item.isBuyerMaker){
-            isbuying = "SELLING!!!!🔴"
+            isbuying = "SELLING!!!!"
           }else{
-            isbuying = "BUYING!!!!🟢"
+            isbuying = "BUYING!!!!"
           }
-          let message = `parity : BTCUSDT  amount : ${item.qty}  ${isbuying}  spot  price : ${item.price}`
+          let message = `Parity : BTCUSDT  \nAmount : ${item.qty}  ${isbuying}  \nSPOT \n price : ${item.price}`
           bot.sendMessage(-1001632592623, message)
           .then(() => {
             
@@ -111,9 +111,9 @@ const getdatafuturesbtc = async () => {
         if(item.qty > 15){
           let isbuying = null
           if(item.isBuyerMaker){
-            isbuying = "SELLING!!!!🔴"
+            isbuying = "SELLING!!!!"
           }else{
-            isbuying = "BUYING!!!!🟢"
+            isbuying = "BUYING!!!!"
           }
           let message = `parity : BTCUSDT  amount : ${item.qty}  ${isbuying}  futures `
           bot.sendMessage(-1001632592623, message)
@@ -170,11 +170,11 @@ const getdataspotdydx = async () => {
         if(item.qty > 50000){
           let isbuying = null
           if(item.isBuyerMaker){
-            isbuying = "SELLING!!!!🔴"
+            isbuying = "SELLING!!!!"
           }else{
-            isbuying = "BUYING!!!!🟢"
+            isbuying = "BUYING!!!!"
           }
-          let message = `parity : DYDXUSDT  amount : ${item.qty}  ${isbuying}  spot price : ${item.price}`
+          let message = `Parity : DYDXUSDT  \nAmount : ${item.qty}  ${isbuying} \nSPOT \nPrice : ${item.price}`
           bot.sendMessage(-1001632592623, message)
           .then(() => {
             
@@ -230,11 +230,11 @@ const getdataspoteth = async () => {
         if(item.qty > 50){
           let isbuying = null
           if(item.isBuyerMaker){
-            isbuying = "SELLING!!!!🔴"
+            isbuying = "SELLING!!!!"
           }else{
-            isbuying = "BUYING!!!!🟢"
+            isbuying = "BUYING!!!!"
           }
-          let message = `parity : ETHUSDT  amount : ${item.qty}  ${isbuying}  spot  price : ${item.price}`
+          let message = `Parity : ETHUSDT  \nAmount : ${item.qty}  ${isbuying} \nSPOT \nPrice : ${item.price}`
           bot.sendMessage(-1001632592623, message)
           .then(() => {
             
@@ -249,6 +249,7 @@ const getdataspoteth = async () => {
         
       }
     }
+
 
     
 
@@ -276,16 +277,192 @@ const getdataspoteth = async () => {
 }
 
 
+let previousbtc =[];
+let totalbtc =[];
+const getdatatotalbtc = async () => {
+  try {
+    const newData= await client.trades({ symbol: 'BTCUSDT' })
+    
+  
+    // const filtereddata = newData.filter(item => !previousData.includes(item))
+    const filtereddata= newData.filter(item => !previousbtc.find(({ id }) => id === item.id));
+
+    for (let i = 0; i < filtereddata.length; i++) {
+      let item = filtereddata[i];
+
+      
+          let isbuying = null
+          if(item.isBuyerMaker){
+          
+            totalbtc = totalbtc - parseFloat(item.qty)
+          }else{
+           
+            totalbtc= totalbtc + parseFloat(item.qty)
+          }
+          // let message = `parity : DYDXUSDT  amount : ${item.qty}  ${isbuying}  spot price : ${item.price}`
+          // bot.sendMessage(-1001632592623, message)
+          // .then(() => {
+            
+          // })
+          // .catch((error) => {
+          //   console.error(error);
+          // });
+          
+        
+     
+    }
+
+    
+
+   previousbtc = newData
+    // const myJSON = JSON.stringify(newData);
+    // const filePath = path.join(__dirname, 'data.json');
+      
+    //   fs.writeFile(filePath, myJSON, (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return;
+    //     }
+    //     console.log('JSON data has been saved to', filePath);
+    //   });
+    if(totalbtc > 150){
+      let message = `Parity : BTCUSDT  \nAmount : ${Math.abs(totalbtc)} \nBUYYING   \nSPOT \n price : ${newData[0].price}`
+      bot.sendMessage(-1001632592623, message)
+      .then(() => {
+        
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+      totalbtc= 0
+
+
+    }
+    if(totalbtc < -150){
+     
+      let message = `Parity : BTCUSDT  \nAmount : ${Math.abs(totalbtc)} \nSELLING   \nSPOT \n price : ${newData[0].price}`
+      bot.sendMessage(-1001632592623, message)
+      .then(() => {
+        
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+      totalbtc= 0
+
+
+    }
+
+   console.log(totalbtc)
+  } catch (error) {
+    console.error('Hata oluştu:', error);
+
+    // Bağlantı kesildiğinde, 5 saniye sonra tekrar deneyin
+    setTimeout(getdata, 5000);
+  }
+
+ 
+  
+}
+let previouseth =[];
+let totaleth =[];
+const getdatatotaleth = async () => {
+  try {
+    const newData= await client.trades({ symbol: 'ETHUSDT' })
+    
+  
+    // const filtereddata = newData.filter(item => !previousData.includes(item))
+    const filtereddata= newData.filter(item => !previouseth.find(({ id }) => id === item.id));
+
+    for (let i = 0; i < filtereddata.length; i++) {
+      let item = filtereddata[i];
+
+      
+          let isbuying = null
+          if(item.isBuyerMaker){
+          
+            totaleth = totaleth - parseFloat(item.qty)
+          }else{
+           
+            totaleth = totaleth + parseFloat(item.qty)
+          }
+          // let message = `parity : DYDXUSDT  amount : ${item.qty}  ${isbuying}  spot price : ${item.price}`
+          // bot.sendMessage(-1001632592623, message)
+          // .then(() => {
+            
+          // })
+          // .catch((error) => {
+          //   console.error(error);
+          // });
+          
+        
+     
+    }
+
+    
+
+   previouseth = newData
+    // const myJSON = JSON.stringify(newData);
+    // const filePath = path.join(__dirname, 'data.json');
+      
+    //   fs.writeFile(filePath, myJSON, (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return;
+    //     }
+    //     console.log('JSON data has been saved to', filePath);
+    //   });
+    if(totaleth > 500){
+      let message = `Parity : ETHUSDT  \nAmount : ${Math.abs(totaleth)} \nBUYING   \nSPOT \n price : ${newData[0].price}`
+      bot.sendMessage(-1001632592623, message)
+      .then(() => {
+        
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+      totaleth= 0
+
+
+    }
+    if(totaleth < -500){
+      let message = `Parity : ETHUSDT  \nAmount : ${Math.abs(totaleth)} \nSELLING   \nSPOT \n price : ${newData[0].price}`
+      bot.sendMessage(-1001632592623, message)
+      .then(() => {
+        
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+      totaleth= 0
+
+
+    }
+
+   console.log(totaleth)
+  } catch (error) {
+    console.error('Hata oluştu:', error);
+
+    // Bağlantı kesildiğinde, 5 saniye sonra tekrar deneyin
+    setTimeout(getdata, 5000);
+  }
+
+ 
+  
+}
+
+
+
 
 
  
 // bot.getChat('@pintigrup')
 
 
-setInterval(getdataspotbtc, 1500);
-//setInterval(getdatafuturesbtc, 1500);
-setInterval(getdataspotdydx, 90000);
-setInterval(getdataspoteth, 35000);
+setInterval(getdatatotalbtc, 1500);
+setInterval(getdatatotaleth, 10000);
+
+// setInterval(getdataspoteth, 35000);
 // getdataspotbtc()
 
 function sendMessage(chatId, message) {
