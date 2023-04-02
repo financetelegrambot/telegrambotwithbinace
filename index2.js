@@ -7,23 +7,274 @@ const Binance = require('binance-api-node').default
 const TelegramBot = require('node-telegram-bot-api');
 let dongu = 0
 let donguu = 0
-const token = '6247571048:AAEcLHl7rPRz1m4nMW4pI93qMmfQZHsN0lo';
-const token2 = '5890700345:AAG4THbtHybqVTCS_4Hk0kczlEt-SjmQzJw'
+const token = '6025824282:AAHjolmo_ToYNgXRzOQmOOcz6xgbvflJ00g';
 
 
 const client = Binance({
-
+  apiKey: 'LFyaWtrQ23WE1JOTVfVxO0VqNAeqhcoPaTTHXCI5vtO1VktQcQD7hOdL7aJXJibE',
+  apiSecret: 'IQH9TS4Qhxidp5qpE3apT2ygPqOVemotNhoQu6EyUyA4G8NOEQcwBkVbgNdf1HhY',
+  getTime: Date.now(),
   
 })
 
 const bot = new TelegramBot(token, {polling: true});
-const bot2 = new TelegramBot(token2, {polling: true});
+
+
+
+let previousData =[];
+let previousDatafutures =[];
+let previousDatadydx =[];
 
 
 
 
+
+const getdataspotbtc = async () => {
+  try {
+    const newData= await client.trades({ symbol: 'BTCUSDT' })
+   
+    console.log(dongu)
+    dongu = dongu + 1
+    // const filtereddata = newData.filter(item => !previousData.includes(item))
+    const filtereddata= newData.filter(item => !previousData.find(({ id }) => id === item.id));
+
+    for (let i = 0; i < filtereddata.length; i++) {
+      let item = filtereddata[i];
+
+      if (!previousData.includes(item.id)) {
+        if(item.qty > 15){
+          let isbuying = null
+          if(item.isBuyerMaker){
+            isbuying = "SELLING!!!!4"
+          }else{
+            isbuying = "BUYING!!!!�"
+          }
+          let message = `Parity : BTCUSDT  \nAmount : ${item.qty}  ${isbuying}  \nSPOT \n price : ${item.price}`
+          bot.sendMessage(-1001632592623, message)
+          .then(() => {
+            
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        
+        }
+      }
+      else {
+        console.log(" birinci veri setinde yer aliyor");
+      }
+    }
+
+    
+
+    previousData = newData
+    // const myJSON = JSON.stringify(newData);
+    // const filePath = path.join(__dirname, 'data.json');
+      
+    //   fs.writeFile(filePath, myJSON, (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return;
+    //     }
+    //     console.log('JSON data has been saved to', filePath);
+    //   });
+
+  } catch (error) {
+    console.error('Hata olu_tu:', error);
+
+    // Balant1 kesildiinde, 5 saniye sonra tekrar deneyin
+    setTimeout(getdata, 5000);
+  }
+  
+  // fs.writeFile(filePath, myJSON, (err) => {
+  //   if (err) {
+  //     console.error(err);
+  //     return;
+  //   }
+  //   console.log('JSON data has been saved to', filePath);
+  // });
+  
+}
+const getdatafuturesbtc = async () => {
+  try {
+    const newData= await client.futuresTrades({ symbol: 'BTCUSDT' })
+    console.log("yenireqatildifutures ")
+    console.log(donguu)
+    donguu = donguu + 1
+    // const filtereddata = newData.filter(item => !previousData.includes(item))
+    const filtereddata= newData.filter(item => !previousDatafutures.find(({ id }) => id === item.id));
+
+    for (let i = 0; i < filtereddata.length; i++) {
+      let item = filtereddata[i];
+
+      if (!previousData.includes(item.id)) {
+        if(item.qty > 15){
+          let isbuying = null
+          if(item.isBuyerMaker){
+            isbuying = "SELLING!!!!4"
+          }else{
+            isbuying = "BUYING!!!!�"
+          }
+          let message = `parity : BTCUSDT  amount : ${item.qty}  ${isbuying}  futures `
+          bot.sendMessage(-1001632592623, message)
+          .then(() => {
+            
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+          console.log(item)
+        }
+      }
+      else {
+        console.log(" birinci veri setinde yer aliyor");
+      }
+    }
+
+    
+
+    previousDatafutures = newData
+    // const myJSON = JSON.stringify(newData);
+    // const filePath = path.join(__dirname, 'data.json');
+      
+    //   fs.writeFile(filePath, myJSON, (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return;
+    //     }
+    //     console.log('JSON data has been saved to', filePath);
+    //   });
+
+  } catch (error) {
+    console.error('Hata olu_tu:', error);
+
+    // Balant1 kesildiinde, 5 saniye sonra tekrar deneyin
+    setTimeout(getdata, 5000);
+  }
 
  
+  
+}
+const getdataspotdydx = async () => {
+  try {
+    const newData= await client.trades({ symbol: 'DYDXUSDT' })
+    
+  
+    // const filtereddata = newData.filter(item => !previousData.includes(item))
+    const filtereddata= newData.filter(item => !previousDatadydx.find(({ id }) => id === item.id));
+
+    for (let i = 0; i < filtereddata.length; i++) {
+      let item = filtereddata[i];
+
+      if (!previousData.includes(item.id)) {
+        if(item.qty > 50000){
+          let isbuying = null
+          if(item.isBuyerMaker){
+            isbuying = "SELLING!!!!4"
+          }else{
+            isbuying = "BUYING!!!!�"
+          }
+          let message = `Parity : DYDXUSDT  \nAmount : ${item.qty}  ${isbuying} \nSPOT \nPrice : ${item.price}`
+          bot.sendMessage(-1001632592623, message)
+          .then(() => {
+            
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+          
+        }
+      }
+      else {
+        
+      }
+    }
+
+    
+
+    previousDatadydx = newData
+    // const myJSON = JSON.stringify(newData);
+    // const filePath = path.join(__dirname, 'data.json');
+      
+    //   fs.writeFile(filePath, myJSON, (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return;
+    //     }
+    //     console.log('JSON data has been saved to', filePath);
+    //   });
+
+  } catch (error) {
+    console.error('Hata olu_tu:', error);
+
+    // Balant1 kesildiinde, 5 saniye sonra tekrar deneyin
+    setTimeout(getdata, 5000);
+  }
+
+ 
+  
+}
+let previousDataeth = []
+const getdataspoteth = async () => {
+  try {
+    const newData= await client.trades({ symbol: 'ETHUSDT' })
+    
+  
+    // const filtereddata = newData.filter(item => !previousData.includes(item))
+    const filtereddata= newData.filter(item => !previousDataeth.find(({ id }) => id === item.id));
+
+    for (let i = 0; i < filtereddata.length; i++) {
+      let item = filtereddata[i];
+
+      if (!previousData.includes(item.id)) {
+        if(item.qty > 50){
+          let isbuying = null
+          if(item.isBuyerMaker){
+            isbuying = "SELLING!!!!4"
+          }else{
+            isbuying = "BUYING!!!!�"
+          }
+          let message = `Parity : ETHUSDT  \nAmount : ${item.qty}  ${isbuying} \nSPOT \nPrice : ${item.price}`
+          bot.sendMessage(-1001632592623, message)
+          .then(() => {
+            
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+          
+        }
+      }
+      else {
+        
+      }
+    }
+
+
+    
+
+    previousDataeth = newData
+    // const myJSON = JSON.stringify(newData);
+    // const filePath = path.join(__dirname, 'data.json');
+      
+    //   fs.writeFile(filePath, myJSON, (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return;
+    //     }
+    //     console.log('JSON data has been saved to', filePath);
+    //   });
+
+  } catch (error) {
+    console.error('Hata olu_tu:', error);
+
+    // Balant1 kesildiinde, 5 saniye sonra tekrar deneyin
+    setTimeout(getdata, 5000);
+  }
+
+ 
+  
+}
 
 function zamanFarki(suan, once) {
   let fark = Math.abs(suan.getTime() - once.getTime());
@@ -55,13 +306,9 @@ let previoussol =[];
 let totalsol =0;
 let lasttimebtc = new Date()
  let lastbtcprice = 0
- let btcvolume =10000000000
 const getdatatotalbtc = async () => {
   try {
-    const newData= await client.trades({ symbol: 'BTCUSDT' })
-    client.dailyStats({ symbol: 'BTCUSDT' }).then(stats => {
-      btcvolume=stats.volume
-    });
+    const newData= await client.trades({ symbol: 'LTCUSDT' })
     
   
     // const filtereddata = newData.filter(item => !previousData.includes(item))
@@ -105,20 +352,13 @@ const getdatatotalbtc = async () => {
     //     }
     //     console.log('JSON data has been saved to', filePath);
     //   });
-    if(totalbtc > btcvolume* 0.01){
+    if(totalbtc > 10000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimebtc)
       lasttimebtc = now
-      let message = `Parity : BTCUSDT  \nAmount : ${Math.abs(totalbtc)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastbtcprice}`
+      let message = `Parity : LTCUSDT  \nAmount : ${Math.abs(totalbtc)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastbtcprice}`
       lastbtcprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -129,20 +369,13 @@ const getdatatotalbtc = async () => {
 
 
     }
-    if(totalbtc < btcvolume* -0.01){
+    if(totalbtc < -10000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimebtc)
       lasttimebtc = now
-      let message = `Parity : BTCUSDT  \nAmount : ${Math.abs(totalbtc)} \nSELLING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastbtcprice}`
+      let message = `Parity : LTCUSDT  \nAmount : ${Math.abs(totalbtc)} \nSELLING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastbtcprice}`
       lastbtcprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -154,7 +387,7 @@ const getdatatotalbtc = async () => {
 
     }
 
-   console.log(`${totalbtc} btc`)
+   console.log(`${totalbtc} LTC`)
   } catch (error) {
     console.error('Hata olu_tu:', error);
 
@@ -167,13 +400,10 @@ const getdatatotalbtc = async () => {
 }
 let lasttimeeth = new Date()
 let lastethprice = 0 
-let ethvolume = 100000000000000000000000
 const getdatatotaleth = async () => {
   try {
-    const newData= await client.trades({ symbol: 'ETHUSDT' })
-    client.dailyStats({ symbol: 'ETHUSDT' }).then(stats => {
-      ethvolume=stats.volume
-    });
+    const newData= await client.trades({ symbol: 'XRPUSDT' })
+    
   
     // const filtereddata = newData.filter(item => !previousData.includes(item))
     const filtereddata= newData.filter(item => !previouseth.find(({ id }) => id === item.id));
@@ -216,20 +446,13 @@ const getdatatotaleth = async () => {
     //     }
     //     console.log('JSON data has been saved to', filePath);
     //   });
-    if(totaleth > ethvolume* 0.01){
+    if(totaleth > 2500000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimeeth)
       lasttimeeth = now
-      let message = `Parity : ETHUSDT  \nAmount : ${Math.abs(totaleth)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastethprice}`
+      let message = `Parity : XRPUSDT  \nAmount : ${Math.abs(totaleth)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastethprice}`
       lastethprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -240,20 +463,13 @@ const getdatatotaleth = async () => {
 
 
     }
-    if(totaleth < ethvolume * -0.01){
+    if(totaleth < -2500000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimeeth)
       lasttimeeth = now
-      let message = `Parity : ETHUSDT  \nAmount : ${Math.abs(totaleth)} \nSELLING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastethprice}`
+      let message = `Parity : XRPUSDT  \nAmount : ${Math.abs(totaleth)} \nSELLING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastethprice}`
       lastethprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -265,7 +481,7 @@ const getdatatotaleth = async () => {
 
     }
 
-   console.log(`${totaleth} eth`)
+   console.log(`${totaleth} XRP`)
   } catch (error) {
     console.error('Hata olu_tu:', error);
 
@@ -278,13 +494,10 @@ const getdatatotaleth = async () => {
 }
 let lasttimebnb = new Date()
 let lastbnbprice = 0
-let bnbvolume = 1000000000000000000000000
 const getdatatotalbnb = async () => {
   try {
-    const newData= await client.trades({ symbol: 'BNBUSDT' })
-    client.dailyStats({ symbol: 'BNBUSDT' }).then(stats => {
-      bnbvolume=stats.volume
-    });
+    const newData= await client.trades({ symbol: 'TRXUSDT' })
+    
   
     // const filtereddata = newData.filter(item => !previousData.includes(item))
     const filtereddata= newData.filter(item => !previousbnb.find(({ id }) => id === item.id));
@@ -327,20 +540,13 @@ const getdatatotalbnb = async () => {
     //     }
     //     console.log('JSON data has been saved to', filePath);
     //   });
-    if(totalbnb > bnbvolume * 0.01){
+    if(totalbnb > 10000000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimebnb)
       lasttimebnb = now
-      let message = `Parity : BNBUSDT  \nAmount : ${Math.abs(totalbnb)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastbnbprice}`
+      let message = `Parity : TRXUSDT  \nAmount : ${Math.abs(totalbnb)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastbnbprice}`
       lastbnbprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -351,20 +557,13 @@ const getdatatotalbnb = async () => {
 
 
     }
-    if( totalbnb < bnbvolume* -0.01){
+    if( totalbnb < -10000000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimebnb)
       lasttimebnb = now
-      let message = `Parity : BNBUSDT  \nAmount : ${Math.abs(totalbnb)} \nSELLING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastbnbprice}`
+      let message = `Parity : TRXUSDT  \nAmount : ${Math.abs(totalbnb)} \nSELLING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastbnbprice}`
       lastbnbprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -376,7 +575,7 @@ const getdatatotalbnb = async () => {
 
     }
 
-   console.log( `${totalbnb} bnb`)
+   console.log( `${totalbnb} TRX`)
   } catch (error) {
     console.error('Hata olu_tu:', error);
 
@@ -389,13 +588,10 @@ const getdatatotalbnb = async () => {
 }
 let lasttimeont = new Date()
 let lastontprice = 0 
-let ontvolume =100000000000000000000000000000
 const getdatatotalont = async () => {
   try {
-    const newData= await client.trades({ symbol: 'ONTUSDT' })
-    client.dailyStats({ symbol: 'ONTUSDT' }).then(stats => {
-      ontvolume=stats.volume
-    });
+    const newData= await client.trades({ symbol: 'DOGEUSDT' })
+    
   
     // const filtereddata = newData.filter(item => !previousData.includes(item))
     const filtereddata= newData.filter(item => !previousont.find(({ id }) => id === item.id));
@@ -438,20 +634,13 @@ const getdatatotalont = async () => {
     //     }
     //     console.log('JSON data has been saved to', filePath);
     //   });
-    if(totalont > ontvolume *0.01){
+    if(totalont > 8000000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimeont)
       lasttimeont = now
-      let message = `Parity : ONTUSDT  \nAmount : ${Math.abs(totalont)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastontprice}`
+      let message = `Parity : DOGEUSDT  \nAmount : ${Math.abs(totalont)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastontprice}`
       lastontprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -462,20 +651,13 @@ const getdatatotalont = async () => {
 
 
     }
-    if( totalont < ontvolume * -0.01){
+    if( totalont < -8000000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimeont)
       lasttimeont = now
-      let message = `Parity : ONTUSDT  \nAmount : ${Math.abs(totalont)} \nSELLING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastontprice}`
+      let message = `Parity : DOGEUSDT  \nAmount : ${Math.abs(totalont)} \nSELLING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastontprice}`
       lastontprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -486,7 +668,7 @@ const getdatatotalont = async () => {
 
     }
 
-   console.log( `${totalont} ont`)
+   console.log( `${totalont} DOGE`)
   } catch (error) {
     console.error('Hata olu_tu:', error);
 
@@ -499,13 +681,9 @@ const getdatatotalont = async () => {
 }
 let lasttimesol = new Date()
 let lastsolprice = 0
-let solvolume = 10000000000000000000000
 const getdatatotalsol = async () => {
   try {
-    const newData= await client.trades({ symbol: 'SOLUSDT' })
-    client.dailyStats({ symbol: 'SOLUSDT' }).then(stats => {
-      solvolume=stats.volume
-    });
+    const newData= await client.trades({ symbol: 'MATICUSDT' })
     
   
     // const filtereddata = newData.filter(item => !previousData.includes(item))
@@ -549,20 +727,13 @@ const getdatatotalsol = async () => {
     //     }
     //     console.log('JSON data has been saved to', filePath);
     //   });
-    if(totalsol > solvolume * 0.01){
+    if(totalsol > 500000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimesol)
       lasttimesol = now
-      let message = `Parity : SOLUSDT  \nAmount : ${Math.abs(totalsol)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastsolprice}`
+      let message = `Parity : MATICUSDT  \nAmount : ${Math.abs(totalsol)} \nBUYING   \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastsolprice}`
       lastsolprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -573,20 +744,13 @@ const getdatatotalsol = async () => {
 
 
     }
-    if( totalsol < solvolume* -0.01){
+    if( totalsol < -500000){
       var now = new Date();
       let fark =zamanFarki(now,lasttimesol)
       lasttimesol = now
-      let message = `Parity : SOLUSDT  \nAmount : ${Math.abs(totalsol)} \nSELLING  \nSPOT \nPRICE : ${newData[0].price}  \nLAST ALERT : ${fark} ago  \nPREVIUS PRICE:${lastsolprice}`
+      let message = `Parity : MATICUSDT  \nAmount : ${Math.abs(totalsol)} \nSELLING  \nSPOT \nPRICE : ${newData[0].price}  \nlast alert : ${fark} ago  \nPREVIUS PRICE:${lastsolprice}`
       lastsolprice = newData[0].price
       bot.sendMessage(-1001632592623, message)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      bot2.sendMessage(-1001643324636, message)
       .then(() => {
         
       })
@@ -598,7 +762,7 @@ const getdatatotalsol = async () => {
 
     }
 
-   console.log(`${totalsol} sol`)
+   console.log(`${totalsol} matic`)
   } catch (error) {
     console.error('Hata olu_tu:', error);
 
@@ -620,10 +784,10 @@ const getdatatotalsol = async () => {
 // bot.getChat('@pintigrup')
 
 
-setInterval(getdatatotalbtc, 1500);
-setInterval(getdatatotaleth, 10000);
-setInterval( getdatatotalbnb ,30000);
-setInterval( getdatatotalont ,60000);
+setInterval(getdatatotalbtc, 60000);
+setInterval(getdatatotaleth, 30000);
+setInterval( getdatatotalbnb ,90000);
+setInterval( getdatatotalont ,15000);
 setInterval( getdatatotalsol ,60000);
 
 
@@ -650,15 +814,6 @@ bot.onText(/\/start/, (msg) => {
   
   });
 
-
-
-
-
-
-
-
-// CORS hatas1n1 ��zmek i�in, t�m kaynaklardan gelen isteklere izin vermek i�in cors() fonksiyonu kullan1l1r.
-
-
+client.time().then(time => console.log(time))
 
 
