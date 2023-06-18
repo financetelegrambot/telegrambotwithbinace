@@ -9,14 +9,15 @@ let dongu = 0
 let donguu = 0
 
 
-
+const token1=''
+const token2=''
 const client = Binance({
 
   
 })
 
-const bot = new TelegramBot( {polling: true});
-const bot2 = new TelegramBot( {polling: true});
+const bot = new TelegramBot(token1, {polling: true});
+const bot2 = new TelegramBot( token2,{polling: true});
 
 
 
