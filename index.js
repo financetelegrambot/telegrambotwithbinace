@@ -7,8 +7,7 @@ const Binance = require('binance-api-node').default
 const TelegramBot = require('node-telegram-bot-api');
 let dongu = 0
 let donguu = 0
-const token = '6247571048:AAEcLHl7rPRz1m4nMW4pI93qMmfQZHsN0lo';
-const token2 = '5890700345:AAG4THbtHybqVTCS_4Hk0kczlEt-SjmQzJw'
+
 
 
 const client = Binance({
@@ -16,8 +15,8 @@ const client = Binance({
   
 })
 
-const bot = new TelegramBot(token, {polling: true});
-const bot2 = new TelegramBot(token2, {polling: true});
+const bot = new TelegramBot( {polling: true});
+const bot2 = new TelegramBot( {polling: true});
 
 
 
