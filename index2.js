@@ -7,13 +7,11 @@ const Binance = require('binance-api-node').default
 const TelegramBot = require('node-telegram-bot-api');
 let dongu = 0
 let donguu = 0
-const token = '6025824282:AAHjolmo_ToYNgXRzOQmOOcz6xgbvflJ00g';
+const token = '';
 
 
 const client = Binance({
-  apiKey: 'LFyaWtrQ23WE1JOTVfVxO0VqNAeqhcoPaTTHXCI5vtO1VktQcQD7hOdL7aJXJibE',
-  apiSecret: 'IQH9TS4Qhxidp5qpE3apT2ygPqOVemotNhoQu6EyUyA4G8NOEQcwBkVbgNdf1HhY',
-  getTime: Date.now(),
+ 
   
 })
 
